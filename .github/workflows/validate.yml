@@ -1,0 +1,70 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 1 * *"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: SKILL.md 前置字段完整
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          text = open("SKILL.md", encoding="utf-8").read()
+          m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
+          if not m:
+              sys.exit("SKILL.md 缺少 YAML 前置块")
+          fm = m.group(1)
+          for key in ("name:", "description:"):
+              if key not in fm:
+                  sys.exit(f"SKILL.md 缺少 {key} 字段")
+          if "pick-model" not in fm:
+              sys.exit("name 字段与目录名不一致")
+          print("SKILL.md 前置字段 OK")
+          PY
+
+      - name: 价目表可解析
+        run: python3 scripts/estimate.py --check
+
+      - name: 估算脚本冒烟测试
+        run: |
+          python3 scripts/estimate.py --in 20000 --out 3000 --json > /tmp/out.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open("/tmp/out.json"))
+          assert d["models"], "没有解析到任何模型"
+          for m in d["models"]:
+              assert m["expected_cost"] >= m["unit_cost"], "期望成本不可能低于单次成本"
+              assert m["tier"] in ("T1", "T2", "T3"), f"非法档位 {m['tier']}"
+          tiers = {m["tier"] for m in d["models"]}
+          assert len(tiers) == 3, f"三档不全：{tiers}"
+          print(f"OK：{len(d['models'])} 个模型，三档齐全")
+          PY
+
+      - name: 价目表过期提醒
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "scripts")
+          from estimate import load_config, config_age_days
+          cfg = load_config("references/models.yaml")
+          age = config_age_days(cfg)
+          if age is not None and age > 90:
+              print(f"::warning::价目表已 {age} 天未更新，请核对价格")
+          else:
+              print(f"价目表新鲜度：{age} 天")
+          PY

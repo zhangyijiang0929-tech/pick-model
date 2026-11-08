@@ -1,8 +1,18 @@
 # pick-model
 
-> 给一段任务描述，判断它值多少钱的模型。
+**别为批处理任务多付 30 倍的钱。**
 
-一个 Agent Skill：读入任务提示词，按五个维度打出复杂度分数，落到 T1/T2/T3 三档，再从你自己的价目表里挑出**期望成本最低**的那个模型。
+给一段任务描述，判断它该用哪个档位的模型，并算出期望成本。同样是 500 次抽取，T1 和 T2 差 35 倍——这个 skill 告诉你什么时候可以放心降，什么时候降了一定会后悔。
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+[![validate](https://github.com/zhangyijiang0929-tech/pick-model/actions/workflows/validate.yml/badge.svg)](https://github.com/zhangyijiang0929-tech/pick-model/actions/workflows/validate.yml)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/zhangyijiang0929-tech/pick-model/main/install.sh | bash
+```
+
+一个 Agent Skill：读入提示词 → 五维打分 → 落 T1/T2/T3 → 从你自己的价目表挑出**期望成本最低**的那个模型。
 
 它输出的不是"建议用强一点的模型"，而是一张能直接做决定的卡片：
 
@@ -52,17 +62,33 @@ T2 · 中等任务 → claude-sonnet-5.5
 
 ## 安装
 
-WorkBuddy / Claude 类 Agent 的 skill 目录结构通用：
+一行装好（默认装到 `~/.workbuddy/skills`，已存在会先备份再覆盖）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/zhangyijiang0929-tech/pick-model/main/install.sh | bash
+```
+
+或者手动 clone。skill 目录结构通用，只要求 `SKILL.md` 在目录根部：
 
 ```bash
 # 全局安装
 git clone https://github.com/zhangyijiang0929-tech/pick-model.git ~/.workbuddy/skills/pick-model
 
-# 或项目内安装
+# 项目内安装
 git clone https://github.com/zhangyijiang0929-tech/pick-model.git ./.workbuddy/skills/pick-model
 ```
 
-也可以直接下载 zip 解压到 skills 目录。要求只有 `SKILL.md` 在目录根部。
+装完 30 秒自检，确认价目表能读、模型数对得上：
+
+```bash
+python3 ~/.workbuddy/skills/pick-model/scripts/estimate.py --check
+```
+
+其他位置用环境变量指定：
+
+```bash
+PICK_MODEL_DEST=~/my-agent/skills ./install.sh
+```
 
 ## 用法
 
@@ -147,6 +173,10 @@ models:
 - `fail_rate` 是估计值，不是测量值。它的准确度取决于你校准它的认真程度。
 - 只覆盖文本模型。图像、语音、embedding 没有纳入。
 - 档位是三档。真实世界比三档细，但三档是大多数人能真正用起来的粒度。
+
+## 贡献
+
+最有价值的贡献不是改代码，是**更新价目表**和**用真实 eval 校准失败率**。带样本量的数字比任何讨论都有用。细节见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## License
 
