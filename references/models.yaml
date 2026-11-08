@@ -1,0 +1,144 @@
+# pick-model 模型与价目表
+#
+# 这是 skill 唯一的"事实来源"。改价、加模型都只改这个文件，不用动 SKILL.md。
+# 价格单位：USD / 1M tokens。数据来源见 updated 下方注释。
+#
+# ⚠ fail_rate 是唯一的主观参数：它表示"这一档模型做这类任务时，输出需要重做的概率"。
+#   社区默认为经验估计，你应当用自己业务的 eval 结果替换它。改这一个数字，
+#   推荐结果会显著变化——这是有意设计的，因为"便宜但常翻车"的模型不该被推荐。
+
+version: 1
+updated: 2026-11-08
+currency: USD
+unit: 1M tokens
+
+# 价格来源（2026-11 交叉核对）：
+#   llmpricing.dev · llmrates.ai · costperprompt.com
+# 若 updated 距今超过 90 天，estimate.py 会打印过期警告。
+
+# 档位说明：
+#   T1 轻任务 —— 抽取、改写、分类、格式化、翻译、简单问答
+#   T2 中等任务 —— 写作、长文总结、常规编码、数据分析
+#   T3 重任务 —— 多步推理、架构设计、数学证明、复杂调试、长链条 agent
+
+models:
+  - id: qwen3.7-flash
+    name: Qwen3.7 Flash
+    vendor: Qwen
+    tier: T1
+    price_in: 0.03
+    price_out: 0.13
+    context: 1000000
+    fail_rate: 0.08
+    tags: [中文, 批量, 抽取, 翻译]
+    note: 单价极低，适合百万级批处理；中文场景表现稳，指令过长时容易漏项
+
+  - id: deepseek-v4-flash
+    name: DeepSeek V4 Flash
+    vendor: DeepSeek
+    tier: T1
+    price_in: 0.0553
+    price_out: 0.30
+    context: 1000000
+    fail_rate: 0.06
+    tags: [中文, 代码, 抽取]
+    note: 中文与代码都不弱，结构化输出较稳
+
+  - id: claude-haiku-5.5
+    name: Claude Haiku 5.5
+    vendor: Anthropic
+    tier: T1
+    price_in: 0.10
+    price_out: 0.50
+    context: 1000000
+    fail_rate: 0.04
+    tags: [结构化输出, 分类, 改写]
+    note: 指令跟随最稳的轻量模型，适合 schema 严格的结构化输出
+
+  - id: gpt-6-luna
+    name: GPT-6 Luna
+    vendor: OpenAI
+    tier: T1
+    price_in: 0.10
+    price_out: 0.50
+    context: 1000000
+    fail_rate: 0.04
+    tags: [英文, 摘要, 格式化]
+    note: 英文场景性价比高，与 Haiku 同价可做冗余备份
+
+  - id: glm-5.3
+    name: GLM-5.3
+    vendor: Z.ai
+    tier: T2
+    price_in: 1.40
+    price_out: 4.40
+    context: 1000000
+    fail_rate: 0.04
+    tags: [agent, 中文, 工具调用]
+    note: agentic 场景性价比好，长链工具调用偶有跳步
+
+  - id: deepseek-v4-pro
+    name: DeepSeek V4 Pro
+    vendor: DeepSeek
+    tier: T2
+    price_in: 1.32
+    price_out: 3.96
+    context: 1000000
+    fail_rate: 0.03
+    tags: [代码, 推理, 中文]
+    note: 中档里最便宜的一档，复杂重构比 T1 明显稳
+
+  - id: claude-sonnet-5.5
+    name: Claude Sonnet 5.5
+    vendor: Anthropic
+    tier: T2
+    price_in: 2.00
+    price_out: 10.00
+    context: 1000000
+    fail_rate: 0.02
+    tags: [写作, 代码, 长文]
+    note: 通用性最好的一档，写作与代码都不出错，多数任务的天花板就在这
+
+  - id: gemini-3.1-pro
+    name: Gemini 3.1 Pro
+    vendor: Google
+    tier: T2
+    price_in: 2.00
+    price_out: 12.00
+    context: 1000000
+    fail_rate: 0.03
+    tags: [超长上下文, 多模态, 文档]
+    note: 处理超长文档和多模态输入时首选
+
+  - id: claude-opus-5.5
+    name: Claude Opus 5.5
+    vendor: Anthropic
+    tier: T3
+    price_in: 4.00
+    price_out: 20.00
+    context: 1000000
+    fail_rate: 0.015
+    tags: [复杂推理, 架构, 代码库级]
+    note: 多步推理和代码库级任务的首选，单次成本约为 Sonnet 的 2 倍
+
+  - id: gpt-5.6-sol
+    name: GPT-5.6 Sol
+    vendor: OpenAI
+    tier: T3
+    price_in: 4.00
+    price_out: 20.00
+    context: 1100000
+    fail_rate: 0.015
+    tags: [终端任务, 复杂推理]
+    note: 终端与工具编排类任务表现好，与 Opus 同价
+
+  - id: claude-fable-5.1
+    name: Claude Fable 5.1
+    vendor: Anthropic
+    tier: T3
+    price_in: 10.00
+    price_out: 50.00
+    context: 1000000
+    fail_rate: 0.01
+    tags: [最高智能, 溢价]
+    note: 只在"错一次的代价远高于 50 美元"时才值得，日常任务属于过度配置
