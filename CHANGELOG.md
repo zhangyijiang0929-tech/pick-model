@@ -2,6 +2,14 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.2.1] - 2026-11-08
+
+### 新增
+- `assets/cover.png`：README 横幅，并用 `assets/scoring.png` 作为五维打分的图版（手机端比表格可读）
+
+### 修复
+- README 开头「多付 30 倍」与正文「差 35 倍」不一致，统一为 35 倍（按 `estimate.py` 实测的期望成本比值）
+
 ## [0.2.0] - 2026-11-08
 
 ### 新增
