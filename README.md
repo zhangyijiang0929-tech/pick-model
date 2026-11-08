@@ -10,6 +10,8 @@
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 [![validate](https://github.com/zhangyijiang0929-tech/pick-model/actions/workflows/validate.yml/badge.svg)](https://github.com/zhangyijiang0929-tech/pick-model/actions/workflows/validate.yml)
 
+📖 方法长文（中文）：[别用单价选模型：一套五维打分 + 期望成本的路由方法](https://juejin.cn/post/7705349866764435499)
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/zhangyijiang0929-tech/pick-model/main/install.sh | bash
 ```
